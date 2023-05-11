@@ -15,18 +15,23 @@ function searchCity (searchTerm) {
 function displaySearchHistory () {
   var searchHistory = JSON.parse(localStorage.getItem('cities'))
 
-  for (var i = 0; i < searchHistory.length; i++) {
-    history.append(
-      '<li><button class="history-item">' + searchHistory[i] + '</button></li>'
-    )
-  }
-  var historyItems = document.querySelectorAll('.history-item')
+  // ensure there is a search term first, before building the button
+  if (searchHistory != null) {
+    for (var i = 0; i < searchHistory.length; i++) {
+      history.append(
+        '<li><button class="history-item">' +
+          searchHistory[i] +
+          '</button></li>'
+      )
+    }
+    var historyItems = document.querySelectorAll('.history-item')
 
-  // add event listener to each button
-  for (var j = 0; j < historyItems.length; j++) {
-    historyItems[j].addEventListener('click', e => {
-      searchCity(e.target.innerText)
-    })
+    // add event listener to each button
+    for (var j = 0; j < historyItems.length; j++) {
+      historyItems[j].addEventListener('click', e => {
+        searchCity(e.target.innerText)
+      })
+    }
   }
 }
 
