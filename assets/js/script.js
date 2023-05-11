@@ -7,6 +7,9 @@ const history = $('#history')
 
 function searchCity (searchTerm) {
   console.log('searching for ', searchTerm)
+  // clear all the list items on the screen first, otherwise there will be duplicates
+  $('ul').empty()
+  fetchWeather(searchTerm)
 }
 
 function displaySearchHistory () {
@@ -27,20 +30,9 @@ function displaySearchHistory () {
   }
 }
 
-form.addEventListener('submit', e => {
-  e.preventDefault()
-
-  // remove the existing weather list items if they are present
-  $('ul').empty()
-
-  var userInput = input.value
-  // handle condition if user input contains comma e.g. san diego, ca
-  if (userInput.includes(',')) {
-    userInput = userInput.split(',')[0]
-  }
-
+function fetchWeather (input) {
   //fetch here
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${userInput}&appid=${apiKey}&units=imperial`
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${apiKey}&units=imperial`
 
   var lat = ''
   var lon = ''
@@ -54,20 +46,20 @@ form.addEventListener('submit', e => {
       const li = document.createElement('li')
       li.classList.add('city')
       const markup = `
-        <h2 class="city-name" data-name="${name},${sys.country}">
-          <span>${name}</span>
-          <sup>${sys.country}</sup>
-        </h2>
-        <div class="city-temp">${Math.round(main.temp)}<sup>°F</sup></div>
-        <figure>
-          <img class="city-icon" src="${icon}" alt="${
+          <h2 class="city-name" data-name="${name},${sys.country}">
+            <span>${name}</span>
+            <sup>${sys.country}</sup>
+          </h2>
+          <div class="city-temp">${Math.round(main.temp)}<sup>°F</sup></div>
+          <figure>
+            <img class="city-icon" src="${icon}" alt="${
         weather[0]['description']
       }">
-          <figcaption>${weather[0]['description']}</figcaption>
-        <div class="city-wind">Wind: ${wind.speed}<sup>MPH</sup></div>
-        <div class="city-wind">Humidity: ${main.humidity}<sup>%</sup></div>
-        </figure>
-      `
+            <figcaption>${weather[0]['description']}</figcaption>
+          <div class="city-wind">Wind: ${wind.speed}<sup>MPH</sup></div>
+          <div class="city-wind">Humidity: ${main.humidity}<sup>%</sup></div>
+          </figure>
+        `
       li.innerHTML = markup
       weatherList.appendChild(li)
 
@@ -103,7 +95,21 @@ form.addEventListener('submit', e => {
     .catch(() => {
       msg.textContent = 'Please enter a valid city.'
     })
+}
 
+// when user enters city name and hits the submit button
+form.addEventListener('submit', e => {
+  e.preventDefault()
+
+  // remove the existing weather list items if they are present
+  $('ul').empty()
+
+  var userInput = input.value
+  // handle condition if user input contains comma e.g. san diego, ca
+  if (userInput.includes(',')) {
+    userInput = userInput.split(',')[0]
+  }
+  fetchWeather(userInput)
   msg.textContent = ''
   form.reset()
   input.focus()
@@ -113,6 +119,8 @@ function buildFiveDayForecast (data) {
   var fiveDaysData = []
   console.log('building forcast')
   for (var i = 0; i < data['list'].length; i++) {
+    // since this forecast api returns weather in 3 hour increments, just pick the weather at 12 pm and assume
+    // that is the weather for the entire day
     if (data['list'][i]['dt_txt'].includes('12:00:00')) {
       var forecast = {
         date: data['list'][i]['dt_txt'],
