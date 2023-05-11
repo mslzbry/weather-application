@@ -14,9 +14,6 @@ function searchCity (searchTerm) {
 
 function displaySearchHistory () {
   var searchHistory = JSON.parse(localStorage.getItem('cities'))
-  // remove duplicates from the search history
-  // ['san diego', 'san francisco', 'san diego', 'atlanta', 'san diego']
-  //var filtered = searchHistory.filter(e => e !== 'seven')
 
   // ensure there is a search term first, before building the button
   if (searchHistory != null) {
@@ -82,6 +79,10 @@ function fetchWeather (input) {
       } else {
         console.log(storedCities)
         cities = storedCities
+        // de-dupe cities if there's a duplicate
+        // so that search history doesn't show the same city multiple times
+        // ['san diego', 'san francisco', 'san diego', 'atlanta', 'san diego']
+        // var filtered = searchHistory.filter(e => e !== 'seven')
         cities.push(name)
         localStorage.setItem('cities', JSON.stringify(cities))
       }

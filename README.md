@@ -18,4 +18,4 @@ Throughout this entire process, I added relevant comments in the code; these com
 
 ## Screenshot:
 
-![Alt text](Assets/screenshot.png 'screenshot')
+![Alt text](assets/screenshot.png 'screenshot')
