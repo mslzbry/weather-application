@@ -14,11 +14,15 @@ function searchCity (searchTerm) {
 
 function displaySearchHistory () {
   var searchHistory = JSON.parse(localStorage.getItem('cities'))
+  // remove duplicates from the search history
+  // ['san diego', 'san francisco', 'san diego', 'atlanta', 'san diego']
+  //var filtered = searchHistory.filter(e => e !== 'seven')
 
   // ensure there is a search term first, before building the button
   if (searchHistory != null) {
     for (var i = 0; i < searchHistory.length; i++) {
-      history.append(
+      // prepend so the most recently searched term shows up first in the list
+      history.prepend(
         '<li><button class="history-item">' +
           searchHistory[i] +
           '</button></li>'
