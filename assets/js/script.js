@@ -6,7 +6,6 @@ const apiKey = '1da1a85c293ab27aa32f96dc209429cb'
 const history = $('#history')
 
 function searchCity (searchTerm) {
-  console.log('searching for ', searchTerm)
   // clear all the list items on the screen first, otherwise there will be duplicates
   $('ul').empty()
   fetchWeather(searchTerm)
@@ -46,7 +45,6 @@ function fetchWeather (input) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       const { main, name, sys, weather, coord, wind, dt } = data
       const icon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0]['icon']}.svg`
       const li = document.createElement('li')
@@ -77,12 +75,19 @@ function fetchWeather (input) {
         cities.push(name)
         localStorage.setItem('cities', JSON.stringify(cities))
       } else {
-        console.log(storedCities)
         cities = storedCities
         // de-dupe cities if there's a duplicate
         // so that search history doesn't show the same city multiple times
-        // ['san diego', 'san francisco', 'san diego', 'atlanta', 'san diego']
-        // var filtered = searchHistory.filter(e => e !== 'seven')
+
+        if (cities.includes(name)) {
+          // if the city was already searched and stored in local storage
+          var idx = cities.indexOf(name)
+          if (idx > -1) {
+            // only splice array when item is found
+            cities.splice(idx, 1) // delete the old entry of the city
+          }
+        }
+
         cities.push(name)
         localStorage.setItem('cities', JSON.stringify(cities))
       }
@@ -127,7 +132,6 @@ form.addEventListener('submit', e => {
 
 function buildFiveDayForecast (data) {
   var fiveDaysData = []
-  console.log('building forcast')
   for (var i = 0; i < data['list'].length; i++) {
     // since this forecast api returns weather in 3 hour increments, just pick the weather at 12 pm and assume
     // that is the weather for the entire day
@@ -144,8 +148,6 @@ function buildFiveDayForecast (data) {
       fiveDaysData.push(forecast)
     }
   }
-  console.log('showing forecast now')
-  console.log(fiveDaysData)
 
   // now that the data has been parsed out from the api, build the html
 
